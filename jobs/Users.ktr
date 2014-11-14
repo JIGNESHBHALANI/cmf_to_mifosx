@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>Office</name>
+    <name>Users</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -66,9 +66,9 @@
     <clusterschemas>
     </clusterschemas>
   <created_user>-</created_user>
-  <created_date>2014&#x2f;10&#x2f;22 10&#x3a;40&#x3a;24.625</created_date>
+  <created_date>2014&#x2f;11&#x2f;11 14&#x3a;13&#x3a;14.287</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2014&#x2f;10&#x2f;22 10&#x3a;40&#x3a;24.625</modified_date>
+  <modified_date>2014&#x2f;11&#x2f;11 14&#x3a;13&#x3a;14.287</modified_date>
   </info>
   <notepads>
   </notepads>
@@ -85,6 +85,8 @@
     <data_tablespace/>
     <index_tablespace/>
     <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
@@ -98,11 +100,11 @@
     </attributes>
   </connection>
   <connection>
-    <name>SouceDB1</name>
+    <name>NanoADM</name>
     <server/>
     <type>ORACLE</type>
     <access>JNDI</access>
-    <database>SourceDB1</database>
+    <database>NanoADM</database>
     <port>1521</port>
     <username/>
     <password>Encrypted </password>
@@ -125,8 +127,8 @@
   <hop> <from>Table input</from><to>Table output</to><enabled>Y</enabled> </hop>
   </order>
   <step>
-    <name>Execute SQL script</name>
-    <type>ExecSQL</type>
+    <name>Table input</name>
+    <type>TableInput</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -135,40 +137,8 @@
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <connection>DestinationDB</connection>
-    <execute_each_row>N</execute_each_row>
-    <single_statement>N</single_statement>
-    <replace_variables>N</replace_variables>
-    <quoteString>N</quoteString>
-    <sql>update m_office set external_id&#x3d;&#x27;001&#x27; where id&#x3d;1&#x3b;</sql>
-    <set_params>N</set_params>
-    <insert_field/>
-    <update_field/>
-    <delete_field/>
-    <read_field/>
-    <arguments>
-    </arguments>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>83</xloc>
-      <yloc>190</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Table input</name>
-    <type>TableInput</type>
-    <description/>
-    <distribute>N</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <connection>SouceDB1</connection>
-    <sql>SELECT unit_code as id,&#xd;&#xa;&#x27;1&#x27; as parent_id,&#xd;&#xa;&#xd;&#xa;CONCAT &#x28;&#x27;.&#x27;, CONCAT &#x28; replace&#x28;unit_code,0,&#x27;&#x27;&#x29;, &#x27;.&#x27;&#x29;&#x29; as hierarchy,&#xd;&#xa;unit_code as external_id , &#xd;&#xa;unit_name as name,&#xd;&#xa;&#x27;2009-01-01&#x27; as opening_date&#xd;&#xa;  FROM unit_mst&#xd;&#xa;where unit_name &#x3c;&#x3e; &#x27;HEAD OFFICE&#x27;&#xd;&#xa;order by unit_code</sql>
+    <connection>NanoADM</connection>
+    <sql>SELECT &#xd;&#xa;case &#xd;&#xa;when u.DELTD_USER is null then 0&#xd;&#xa;else 1 end as is_deleted&#xd;&#xa;,1 as office_id&#xd;&#xa;,u.USER_NAME as username&#xd;&#xa;,u.USER_CODE as firstname&#xd;&#xa;,&#x27;Replace&#x27; as password&#xd;&#xa;,u.EMP_MAILID as email&#xd;&#xa;,0 as firsttime_login_remaining&#xd;&#xa;,case when u.USER_EXP &#x3d; &#x27;N&#x27; then 1 else 0 end as nonexpired&#xd;&#xa;,1 as nonloked&#xd;&#xa;,1 as nonexpired_credentials&#xd;&#xa;,case when u.STATUS&#x3d;&#x27;A&#x27; then 1 else 0 end as enabled&#xd;&#xa;,u.CRTD_DATE as last_time_password_updated&#xd;&#xa;FROM CM_USER_DEFINITION u</sql>
     <limit>0</limit>
     <lookup/>
     <execute_each_row>N</execute_each_row>
@@ -176,8 +146,8 @@
     <lazy_conversion_active>N</lazy_conversion_active>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>116</xloc>
-      <yloc>30</yloc>
+      <xloc>319</xloc>
+      <yloc>63</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -195,7 +165,7 @@
            </partitioning>
     <connection>DestinationDB</connection>
     <schema/>
-    <table>m_office</table>
+    <table>m_appuser</table>
     <commit>1000</commit>
     <truncate>N</truncate>
     <ignore_errors>N</ignore_errors>
@@ -212,34 +182,58 @@
     <return_field/>
     <fields>
         <field>
-          <column_name>ID</column_name>
-          <stream_name>ID</stream_name>
+          <column_name>is_deleted</column_name>
+          <stream_name>IS_DELETED</stream_name>
         </field>
         <field>
-          <column_name>PARENT_ID</column_name>
-          <stream_name>PARENT_ID</stream_name>
+          <column_name>office_id</column_name>
+          <stream_name>OFFICE_ID</stream_name>
         </field>
         <field>
-          <column_name>HIERARCHY</column_name>
-          <stream_name>HIERARCHY</stream_name>
+          <column_name>username</column_name>
+          <stream_name>USERNAME</stream_name>
         </field>
         <field>
-          <column_name>EXTERNAL_ID</column_name>
-          <stream_name>EXTERNAL_ID</stream_name>
+          <column_name>firstname</column_name>
+          <stream_name>FIRSTNAME</stream_name>
         </field>
         <field>
-          <column_name>NAME</column_name>
-          <stream_name>NAME</stream_name>
+          <column_name>password</column_name>
+          <stream_name>PASSWORD</stream_name>
         </field>
         <field>
-          <column_name>OPENING_DATE</column_name>
-          <stream_name>OPENING_DATE</stream_name>
+          <column_name>email</column_name>
+          <stream_name>EMAIL</stream_name>
+        </field>
+        <field>
+          <column_name>firsttime_login_remaining</column_name>
+          <stream_name>FIRSTTIME_LOGIN_REMAINING</stream_name>
+        </field>
+        <field>
+          <column_name>nonexpired</column_name>
+          <stream_name>NONEXPIRED</stream_name>
+        </field>
+        <field>
+          <column_name>nonlocked</column_name>
+          <stream_name>NONLOKED</stream_name>
+        </field>
+        <field>
+          <column_name>nonexpired_credentials</column_name>
+          <stream_name>NONEXPIRED_CREDENTIALS</stream_name>
+        </field>
+        <field>
+          <column_name>enabled</column_name>
+          <stream_name>ENABLED</stream_name>
+        </field>
+        <field>
+          <column_name>last_time_password_updated</column_name>
+          <stream_name>LAST_TIME_PASSWORD_UPDATED</stream_name>
         </field>
     </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>285</xloc>
-      <yloc>24</yloc>
+      <xloc>485</xloc>
+      <yloc>60</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
